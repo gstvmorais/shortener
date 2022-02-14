@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { users } from "../model/UserModel.js";
 
 const Controller = {
@@ -12,13 +13,15 @@ const Controller = {
     response.send(users);
   },
   remove: (request, response) => {
-    const id = request.params.id;
+    const { id } = request.params.id;
+
     const userIndex = users.findIndex((user) => user.id === id);
-    if (userIndex >= 0) {
-      users.splice(userIndex, 1);
-      response.status(200).send({ message: "User deleted!" });
+
+    if (userIndex === -1) {
+      response.status(404).send({ message: "User not found" });
     }
-    response.status(404).send({ message: "User not found" });
+    users.splice(userIndex, 1);
+    response.status(200).send({ message: "User deleted!" });
   },
   getOne: (request, response) => {
     const id = request.params.id;
@@ -30,17 +33,19 @@ const Controller = {
     response.status(404).send({ message: "User not found" });
   },
   update: (request, response) => {
-    const id = request.params.id;
-    const userUpdate = { ...request.body };
+    const { id } = request.params.id;
+    const { email, name } = request.body;
 
-    const user = users.find((user) => user.id === id);
-    if (user) {
-      for (const value in userUpdate) {
-        user[value] = userUpdate[value];
-      }
-      response.send(user);
+    const userIndex = users.findIndex((user) => user.id === id);
+    if (userIndex === -1) {
+      response.status(404).send({ message: "User not found" });
     }
-    response.status(404).send({ message: "User not found" });
+    users[userIndex] = {
+      id,
+      name,
+      email,
+    };
+    response.send({ user: user[userIndex] });
   },
 };
 export default Controller;
