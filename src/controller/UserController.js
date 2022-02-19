@@ -1,51 +1,68 @@
 import crypto from "crypto";
-import { users } from "../model/UserModel.js";
+import UserModel from "../model/UserModel.js";
 
-const Controller = {
-  index: (request, response) => {
-    response.send(users);
-  },
-  store: (request, response) => {
-    const { name, email } = request.body;
+class UserController {
+  async index(request, response) {
+    const users = await UserModel.find().lean();
 
-    const user = { id: crypto.randomUUID(), name, email };
-    users.push(user);
-    response.send(users);
-  },
-  remove: (request, response) => {
-    const { id } = request.params.id;
-
-    const userIndex = users.findIndex((user) => user.id === id);
-
-    if (userIndex === -1) {
-      response.status(404).send({ message: "User not found" });
-    }
-    users.splice(userIndex, 1);
-    response.status(200).send({ message: "User deleted!" });
-  },
-  getOne: (request, response) => {
-    const id = request.params.id;
-
-    const user = users.find((user) => user.id === id);
-    if (user) {
-      response.send({ user });
-    }
-    response.status(404).send({ message: "User not found" });
-  },
-  update: (request, response) => {
-    const { id } = request.params.id;
-    const { email, name } = request.body;
-
-    const userIndex = users.findIndex((user) => user.id === id);
-    if (userIndex === -1) {
-      response.status(404).send({ message: "User not found" });
-    }
-    users[userIndex] = {
-      id,
+    response.json({ users });
+  }
+  async store(request, response) {
+    const { name, email, password, phones } = request.body;
+    const user = await UserModel.create({
       name,
       email,
-    };
-    response.send({ user: user[userIndex] });
-  },
-};
-export default Controller;
+      role,
+      password,
+      phones,
+    });
+    response.send({ user });
+  }
+  async remove(request, response) {
+    const { id } = request.params.id;
+
+    try {
+      const user = await UserModel.findById(id);
+      if (user) {
+        await user.remove();
+        response.status(200).send({ message: "User deleted!" });
+      }
+      response.status(404).send({ message: "User not found" });
+    } catch (error) {
+      response.status(400).json({ message: "Unexpected Error" });
+    }
+  }
+  async getOne(request, response) {
+    const { id } = request.params;
+    try {
+      const user = await UserModel.findById(id);
+      if (user) {
+        return response.json({ shortner });
+      }
+      response.status(404).json({ message: "User not exist" });
+    } catch (error) {
+      console.log(error.message);
+      response.status(400).json({ message: "Unexpected Error" });
+    }
+  }
+  async update(request, response) {
+    const { id } = request.params;
+    const { name, email, role, password, createdAt, modifiedAt, phones } =
+      request.body;
+    const user = await UserModel.findByIdAndUpdate(
+      {
+        id,
+        name,
+        email,
+        role,
+        password,
+        createdAt,
+        modifiedAt,
+        phones,
+      },
+      { new: true }
+    );
+    response.json({ user });
+  }
+}
+export default UserController;

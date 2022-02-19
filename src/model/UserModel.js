@@ -1,14 +1,18 @@
-import crypto from "crypto";
+import mongoose from "mongoose";
 
-export const users = [
+const UserSchema = new mongoose.Schema(
   {
-    id: crypto.randomUUID(),
-    name: "Keven Leone",
-    email: "keven.leone@hotmail.com",
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    phones: [String],
+    role: { type: String, enum: ["Administrator", "User"], default: "User" },
   },
   {
-    id: crypto.randomUUID(),
-    name: "Gustavo Morais",
-    email: "gustavo.morais@hotmail.com",
-  },
-];
+    timestamp: true,
+  }
+);
+
+const UserModel = mongoose.model("user", UserSchema);
+
+export default UserModel;

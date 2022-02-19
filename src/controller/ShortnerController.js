@@ -55,7 +55,7 @@ class ShortnerController {
       if (shortner) {
         return response.json({ shortner });
       }
-      response.status(404).json({ message: "Unexpected Error" });
+      response.status(404).json({ message: "Shortner Not Found" });
     } catch (error) {
       console.log(error.message);
       response.status(400).json({ message: "Unexpected Error" });
