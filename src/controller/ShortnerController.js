@@ -4,7 +4,9 @@ import ShortnerModel from "../model/ShortnerModel.js";
 
 class ShortnerController {
   async index(request, response) {
-    const shortners = await ShortnerModel.find().lean();
+    const shortners = await ShortnerModel.find({
+      user: request.loggedUser._id,
+    }).lean();
 
     response.json({ shortners });
   }
@@ -13,6 +15,7 @@ class ShortnerController {
     const { link, name, expiredDate } = request.body;
     const [hash] = crypto.randomUUID().split("-");
     const shortner = await ShortnerModel.create({
+      user: request.loggedUser._id,
       hash,
       link,
       name,
@@ -25,8 +28,8 @@ class ShortnerController {
     const { id } = request.params;
     const { link, name, expiredDate } = request.body;
     const shortner = await ShortnerModel.findByIdAndUpdate(
+      id,
       {
-        id,
         link,
         name,
         expiredDate,
