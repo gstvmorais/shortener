@@ -1,0 +1,13 @@
+{
+  "name": "@monorepo/movie",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type":"module",
+  "devDependencies": {
+    "prisma": "^3.10.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.10.0"
+  }
+}
