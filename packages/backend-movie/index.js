@@ -1,44 +1,14 @@
-const { PrismaClient } = require("@prisma/client");
+import prisma from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prismaClient = new prisma.PrismaClient();
 
-(async () => {
-  const sessions = await prisma.session.findMany({ include: { movie: true } });
+async function listUsers() {
+  const users = await prismaClient.user.findMany({ select: { name: true } });
+  console.log(users);
+}
 
-  console.log(sessions);
-
-  //   const session = await prisma.session.create({
-  //     data: {
-  //       sessionDate: new Date(),
-  //       room: 'IMAX',
-  //       movie: { connect: { id: 'd92ec9a8-de41-4bfe-945a-3f21213c806f' } }
-  //     }
-  //   })
-
-  //   console.log(session)
-
-  //   const movies = await prisma.movie.createMany({
-  //     data: [{
-  //       name: 'Interestelar',
-  //       description: 'SCI-FI',
-  //       duration: 180,
-  //       classification: 'PARENT_GUIDANCE_SUGGESTED'
-  //     },
-  //     {
-  //       name: 'Batman Begins',
-  //       description: 'Batman...',
-  //       duration: 180,
-  //       classification: 'RESTRICTED'
-  //     },
-  //     {
-  //       name: 'Batman Dark Night',
-  //       description: 'Batman...',
-  //       duration: 150,
-  //       classification: 'RESTRICTED'
-  //     }]
-  //   })
-
-  //   console.log(movies.count)
-})();
-
-// createUser("Keven", "keven.santos.sz@gmail.com", new Date())
+async function createUser(name, email, birthDate) {
+  await prismaClient.user.create({ data: { email, name, birthDate } });
+}
+// createUser("Gustavo", "gustavo.morais@gmail.com", new Date());
+listUsers();
